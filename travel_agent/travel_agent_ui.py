@@ -33,8 +33,12 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
+#API KEYS
+
 API_KEY = st.secrets["GROQ_API_KEY"]
 MEMORY_FILE = "travel_memory.json"
+
+# MEMORY
 
 def load_memory():
     try:
@@ -54,6 +58,8 @@ def trim_history(history, max_messages=4):
     system_msgs = [m for m in history if isinstance(m, SystemMessage)]
     other_msgs = [m for m in history if not isinstance(m, SystemMessage)]
     return system_msgs + other_msgs[-max_messages:]
+    
+# ALL TOOLS
 
 @tool
 def weather(city: str):
@@ -81,6 +87,8 @@ def itinerary(tocity: str, days: str, budget: str):
     result = search.run(f"best {days} day itinerary for {tocity} tourist places to visit")
     return result
 
+# PROMPT
+
 SYSTEM_MESSAGE = """You are a helpful travel agent assistant.
 
 RULES:
@@ -94,6 +102,7 @@ RULES:
 8. For hotels search: "best hotels in X with price"
 """
 
+# STREAMLIT
 @st.cache_resource
 def get_agent():
     llm = ChatGroq(api_key=API_KEY, model="llama-3.3-70b-versatile")
