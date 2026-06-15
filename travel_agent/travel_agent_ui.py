@@ -50,7 +50,7 @@ def save_memory(chat_history):
     except:
         pass
 
-def trim_history(history, max_messages=10):
+def trim_history(history, max_messages=4):
     system_msgs = [m for m in history if isinstance(m, SystemMessage)]
     other_msgs = [m for m in history if not isinstance(m, SystemMessage)]
     return system_msgs + other_msgs[-max_messages:]
@@ -62,47 +62,42 @@ def weather(city: str):
         r = requests.get(f"https://wttr.in/{city}?format=j1", timeout=5)
         if r.status_code == 200:
             c = r.json()["current_condition"][0]
-            return f"Weather in {city}: {c['temp_C']}C, {c['weatherDesc'][0]['value']}"
+            return f"Weather in {city}: {c['temp_C']}C, {c['weatherDesc'][0]['value']}, Humidity: {c['humidity']}%, Wind: {c['windspeedKmph']} kmph"
         return "City not found"
     except Exception as e:
         return f"Weather not available: {str(e)}"
 
 @tool
-def travelling_train(fromcity: str, tocity: str, date: str, persons: str):
-    """Search trains between two cities."""
-    return f"Use DuckDuckGoSearchRun to find current train prices from {fromcity} to {tocity} for {persons} persons on {date}."
-
-@tool
-def travelling_flight(fromcity: str, tocity: str, date: str, persons: str):
-    """Search flights between two cities."""
-    return f"Use DuckDuckGoSearchRun to find current flight prices from {fromcity} to {tocity} for {persons} persons on {date}."
-
-@tool
-def hotel(tocity: str, budget: str, days: str):
-    """Search hotels in a city based on budget and days"""
-    return f"Use DuckDuckGoSearchRun to find top 3 hotels in {tocity} for {days} days within {budget} budget. Show hotel name, price and rating."
+def search_travel(query: str):
+    """Search for any travel related information including flights, trains, hotels and prices"""
+    search = DuckDuckGoSearchRun()
+    result = search.run(query)
+    return result
 
 @tool
 def itinerary(tocity: str, days: str, budget: str):
     """Generate a day by day travel plan for a city."""
-    return f"Generate a detailed {days}-day itinerary for {tocity} with budget {budget}."
+    search = DuckDuckGoSearchRun()
+    result = search.run(f"best {days} day itinerary for {tocity} tourist places to visit")
+    return result
 
-SYSTEM_MESSAGE = """You are a helpful world-class travel agent assistant.
+SYSTEM_MESSAGE = """You are a helpful travel agent assistant.
 
-STRICT RULES:
-1. ALWAYS use DuckDuckGoSearchRun to search for real prices.
-2. NEVER show raw function calls or JSON to the user.
-3. Always show final answer in plain simple English.
-4. For hotels always search and list top 3 hotels with name and price.
-5. Give realistic prices only.
-6. Flag impossible routes like train from India to Norway.
+RULES:
+1. For weather questions use the weather tool directly.
+2. For flights, trains, hotels and prices ALWAYS use search_travel tool with a specific search query.
+3. For itinerary use the itinerary tool.
+4. NEVER show raw JSON or function calls to user.
+5. Always answer in clean simple English.
+6. For train prices search: "train ticket price from X to Y"
+7. For flight prices search: "flight ticket price from X to Y"
+8. For hotels search: "best hotels in X with price"
 """
 
 @st.cache_resource
 def get_agent():
-    llm = ChatGroq(api_key=API_KEY, model="llama-3.1-8b-instant")
-    web_search = DuckDuckGoSearchRun()
-    tools = [weather, travelling_train, travelling_flight, hotel, itinerary, web_search]
+    llm = ChatGroq(api_key=API_KEY, model="llama-3.3-70b-versatile")
+    tools = [weather, search_travel, itinerary]
     return create_react_agent(llm, tools)
 
 if "chat_history" not in st.session_state:
@@ -150,10 +145,10 @@ with col2:
         st.session_state.prefill = "Plan a 10 day trip to Norway with full itinerary"
 with col3:
     if st.button("🚆 Train price Chennai to Delhi"):
-        st.session_state.prefill = "What is the current train price from Chennai to Delhi?"
+        st.session_state.prefill = "What is the current train ticket price from Chennai to Delhi?"
 with col4:
     if st.button("✈️ Flight price Mumbai to Bangkok"):
-        st.session_state.prefill = "What is the current flight price from Mumbai to Bangkok?"
+        st.session_state.prefill = "What is the current flight ticket price from Mumbai to Bangkok?"
 
 st.markdown("---")
 
@@ -173,7 +168,7 @@ if user_input:
     agent_executor = get_agent()
     st.session_state.display_messages.append({"role": "user", "content": user_input})
     st.session_state.chat_history.append(HumanMessage(content=user_input))
-    trimmed = trim_history(st.session_state.chat_history, max_messages=6)
+    trimmed = trim_history(st.session_state.chat_history, max_messages=4)
     with st.spinner("Searching for you..."):
         try:
             response = agent_executor.invoke({"messages": trimmed})
