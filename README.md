@@ -158,24 +158,21 @@ This project demonstrates several advanced AI engineering concepts:
 ---
 
 ## 📁 Project Structure
-
 ```
-ai-travel-agent/
+travel-agent/
 │
-├── app.py                  # Streamlit entry point
-├── agent/
-│   ├── core.py             # LLM agent logic & tool orchestration
-│   ├── memory.py           # Persistent memory management
-│   └── tools/
-│       ├── flights.py      # Flight price fetching tool
-│       ├── trains.py       # Train fare fetching tool
-│       └── weather.py      # Weather forecast tool
-├── utils/
-│   └── budget.py           # Budget parsing & constraint logic
-├── requirements.txt
-└── .env.example
+├── .devcontainer/
+│   └── devcontainer.json         # Dev container config for consistent environment
+├── travel_agent/
+│   ├── travel_agent_ui.py        # Full application — LLM agent, tool calling,
+│   │                             # memory, itinerary builder & Streamlit UI
+│   └── requirements.txt          # All Python dependencies
+└── README.md                     # Project documentation
+
 ```
 
+
+💡 The entire agent logic — including tool calling, persistent memory, budget reasoning, and UI — is implemented inside travel_agent_ui.py as a single-file deployment, optimised for Streamlit Cloud.
 ---
 
 ## 🎯 Skills Demonstrated
@@ -205,10 +202,14 @@ This project was built to showcase the following to potential employers:
 
 ## 🙋‍♂️ About the Developer
 
-Built with ❤️ by **[Your SHAKSHI SONI]**
+Built with ❤️ by **[SHAKSHI SONI]**
 
 I'm a developer passionate about building practical AI applications that solve real-world problems. This project explores agentic AI design — where an LLM doesn't just chat, but *acts*, by calling tools, remembering context, and making decisions autonomously.
 ---
+
+📫 **Connect with me:**
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-0A66C2?style=flat&logo=linkedin)](https://linkedin.com/in/yourprofile)
+
 
 <div align="center">
 
