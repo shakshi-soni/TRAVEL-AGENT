@@ -189,3 +189,4 @@ if user_input:
             st.error(f"Error: {str(e)}")
             st.session_state.chat_history.pop()
     st.rerun()
+    
