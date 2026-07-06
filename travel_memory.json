@@ -12,4 +12,4 @@ for msg in memory:
     elif msg["type"] == "ai" and msg["data"]["content"]:
         clean.append({"Agent": msg["data"]["content"]})
 
-print(json.dumps(clean, indent=2, ensure_ascii=False))
+print(json.dumps(clean, indent=2))
