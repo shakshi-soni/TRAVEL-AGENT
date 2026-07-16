@@ -1,18 +1,13 @@
-name: Test Travel Agent
+name: Keep Alive - Travel Agent
 
 on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
+  schedule:
+    - cron: '*/10 * * * *'
+  workflow_dispatch:
 
 jobs:
-  test:
+  ping:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-      - run: pip install -r requirements.txt
-      - run: python -m pytest || echo "No tests yet"
+      - name: Ping app
+        run: curl -f https://travelagent-bqtmr6s69hxtqk8oxibuqj.streamlit.app/ || echo "Ping failed"
