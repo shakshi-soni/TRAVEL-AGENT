@@ -17,4 +17,4 @@ jobs:
         run: pip install selenium webdriver-manager
 
       - name: Wake app
-        run: python wake_app.py
+      run: python wake_up.py
