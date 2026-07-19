@@ -8,6 +8,9 @@ jobs:
   wake:
     runs-on: ubuntu-latest
     steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
@@ -17,4 +20,4 @@ jobs:
         run: pip install selenium webdriver-manager
 
       - name: Wake app
-      run: python wake_up.py
+        run: python wake_up.py
