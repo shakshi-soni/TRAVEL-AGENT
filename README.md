@@ -1,219 +1,109 @@
-<div align="center">
+# AI Travel Agent
 
-# ✈️ AI Travel Agent
+[![Live Demo](https://img.shields.io/badge/🚀%20Live%20Demo-blue?style=for-the-badge)](https://travelagent-bqtmr6s69hxtqk8oxibuqj.streamlit.app/)
 
-### Your Personal AI-Powered Trip Planner — Itineraries, Live Prices & Weather, All in One Place
+A conversational trip planner. Tell it your destination, dates, and budget, and it pulls live flight prices, train fares, and weather, then builds a day-by-day itinerary that actually fits what you said you can spend.
 
-[![Live Demo](https://img.shields.io/badge/🚀%20Live%20Demo-Streamlit-FF4B4B?style=for-the-badge)](https://travelagent-bqtmr6s69hxtqk8oxibuqj.streamlit.app/)
-[![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://python.org)
-[![Streamlit](https://img.shields.io/badge/Streamlit-App-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white)](https://streamlit.io)
-[![LLM Powered](https://img.shields.io/badge/LLM-Powered-8A2BE2?style=for-the-badge&logo=openai&logoColor=white)]()
+This is a planning tool, it doesn't book anything — prices are fetched live for reference only.
 
-</div>
+## What it does
 
----
+You give it a destination, dates, and a budget in plain language. It calls out to flight/train price lookups and a weather API, then reasons over what comes back to build an itinerary — not just listing options, but actually filtering by what fits the stated budget across transport, stay, and food. It remembers your preferences (budget range, travel style) across sessions, so you don't have to restate them every time you come back.
 
-## 🌍 What Is This?
-
-**AI Travel Agent** is a smart, conversational travel planning assistant that does all the heavy research for you. Just tell it your destination, travel dates, and budget — and it builds you a complete trip plan with **real-time flight prices**, **train fares**, and **live weather forecasts**, all tailored to what you can actually afford.
-
-> ⚠️ **Note:** This app is a **planning tool only** — it does not book or purchase any tickets. All prices are fetched live for reference.
-
----
-
-## ✨ Key Features
-
-| Feature | Description |
-|---|---|
-| 🗓️ **Smart Itinerary Generator** | Day-by-day trip plans customized to your budget and interests |
-| 💸 **Budget-Aware Planning** | Recommends activities, stays, and transport that fit your budget |
-| ✈️ **Live Flight Prices** | Fetches current flight fares using real-time tool calls |
-| 🚆 **Train Fare Lookup** | Checks live train prices between your destinations |
-| 🌤️ **Weather Forecasts** | Shows expected weather for your travel dates so you can pack right |
-| 🧠 **Persistent Memory** | Remembers your preferences across conversations — no need to repeat yourself |
-| 🔧 **LLM Tool Calling** | Uses function/tool calling to fetch live data mid-conversation |
-| 💬 **Conversational UI** | Natural chat interface — ask follow-up questions, refine your plan |
-
----
-
-## 🏗️ Architecture & Tech Stack
+## Example
 
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│                      Streamlit Frontend                         │
-│                (Conversational Chat Interface)                  │
-└──────────────────────────────┬──────────────────────────────────┘
-                               │
-┌──────────────────────────────▼──────────────────────────────────┐
-│                       LLM Core (Agent)                          │
-│            Tool Calling + Reasoning + Memory                    │
-└───┬──────────┬─────────────┬────────────┬──────────┬───────────┘
-    │          │             │            │          │
-┌───▼───┐ ┌───▼────┐ ┌──────▼──┐ ┌──────▼──┐ ┌────▼──────┐
-│Flight │ │ Train  │ │ Weather │ │ Hotel   │ │Persistent │
-│  API  │ │  API   │ │   API   │ │  API    │ │  Memory   │
-│ Tool  │ │  Tool  │ │  Tool   │ │  Tool   │ │  Storage  │
-└───────┘ └────────┘ └─────────┘ └─────────┘ └───────────┘
-               │            │          │
-        ┌──────▼────────────▼──────────▼──────┐
-        │         Itinerary Builder            │
-        │   (Budget + Weather + Price Aware)   │
-        └──────────────────────────────────────┘
+User: I want to travel from Chennai to Delhi for 5 days in July.
+      My total budget is ₹20,000. I love history and street food.
+
+Agent: Checking flights, trains, and weather for Delhi in July...
+
+       Cheapest flight: ₹4,200 (IndiGo, Jul 12)
+       Train option: ₹1,800 (Tamil Nadu Express, 32 hrs)
+       Weather: 32–38°C, partly cloudy
+
+       5-day Delhi itinerary within ₹20,000:
+
+       Day 1 — Old Delhi
+         Red Fort, Chandni Chowk, Jama Masjid
+         Stay: ₹800/night hostel near Paharganj
+       Day 2 — Mughal heritage
+         Humayun's Tomb, Qutub Minar
+       ...
+
+User: Can you show me only train options and reduce food budget?
+
+Agent: Sure — here's a revised plan using trains only...
 ```
 
+## Architecture
 
-### 🛠️ Technologies Used
+```
+Streamlit chat interface
+        ↓
+LLM agent (tool calling + memory)
+        ↓
+   ┌────┼──────────┐
+   ↓    ↓          ↓
+Flight  Train    Weather   → itinerary builder
+ API     API       API       (budget + weather aware)
+        ↓
+persistent memory (preferences across sessions)
+```
 
-- **Frontend:** Streamlit
-- **LLM:** Large Language Model with function/tool calling support
-- **Memory:** Persistent conversation memory (remembers user preferences across sessions)
-- **Tool Calling:** Real-time API integrations called dynamically by the LLM
-- **APIs Integrated:**
-  - ✈️ Flight price data API
-  - 🚆 Train/rail fare API
-  - 🌤️ Weather forecast API
-- **Language:** Python 3.10+
+The agent decides when it needs live data and calls the relevant tool — it's not fetching everything upfront. Multi-step queries ("plan my trip") get broken into fetch prices → check weather → build itinerary → present it.
 
----
-
-## 🚀 Getting Started
-
-### Prerequisites
+## Running locally
 
 ```bash
-Python 3.10+
-pip
-```
-
-### Installation
-
-```bash
-# 1. Clone the repository
 git clone https://github.com/shakshi-soni/TRAVEL-AGENT.git
 cd ai-travel-agent
-
-# 2. Install dependencies
 pip install -r requirements.txt
 
-# 3. Set up environment variables
 cp .env.example .env
-# Add your API keys to .env
+# add LLM_API_KEY and WEATHER_API_KEY
 
-# 4. Run the app
 streamlit run app.py
 ```
 
-### Environment Variables
+## Project structure
 
-```env
-LLM_API_KEY=your_llm_api_key
-WEATHER_API_KEY=your_weather_api_key
-
-```
-
----
-
-## 💬 Example Conversation
-
-```
-👤 User:  I want to travel from Chennai to Delhi for 5 days in July.
-          My total budget is ₹20,000. I love history and street food.
-
-🤖 Agent: Great! Let me check flights, trains, and the weather for Delhi in July...
-
-          ✈️ Cheapest Flight: ₹4,200 (IndiGo, Jul 12)
-          🚆 Train Option:   ₹1,800 (Tamil Nadu Express, 32 hrs)
-          🌤️ Weather:        32–38°C, partly cloudy
-
-          Here's your 5-day Delhi itinerary within ₹20,000:
-
-          Day 1 – Arrival & Old Delhi
-            • Red Fort, Chandni Chowk, Jama Masjid
-            • Budget stay: ₹800/night hostel near Paharganj
-
-          Day 2 – Mughal Heritage
-            • Humayun's Tomb, Qutub Minar
-          ...
-
-👤 User:  Can you show me only train options and reduce food budget?
-
-🤖 Agent: Sure! Here's a revised plan using trains only...
-```
-
----
-
-## 🧠 How the AI Agent Works
-
-This project demonstrates several advanced AI engineering concepts:
-
-1. **Tool Calling / Function Calling** — The LLM decides *when* to call external APIs (flights, trains, weather) based on user intent, then reasons over the returned data to form a response.
-
-2. **Persistent Memory** — User preferences (budget range, favourite travel style, past destinations) are stored and recalled across sessions, making the agent feel truly personal.
-
-3. **Budget-Constrained Reasoning** — The agent doesn't just list options; it actively filters and selects based on the user's stated budget and optimises across accommodation + transport + food.
-
-4. **Multi-step Planning** — The agent breaks a complex query ("plan my trip") into subtasks: fetch prices → check weather → generate itinerary → present coherently.
-
----
-
-## 📁 Project Structure
 ```
 travel-agent/
-│
 ├── .devcontainer/
-│   └── devcontainer.json         # Dev container config for consistent environment
+│   └── devcontainer.json
 ├── travel_agent/
-│   ├── travel_agent_ui.py        # Full application — LLM agent, tool calling,
-│   │                             # memory, itinerary builder & Streamlit UI
-│   └── requirements.txt          # All Python dependencies
-└── README.md                     # Project documentation
-└──travel_memory.json             # president memory 
+│   ├── travel_agent_ui.py   # agent, tool calling, memory, itinerary logic, UI — all in one file
+│   └── requirements.txt
+├── travel_memory.json       # persisted user preferences
+└── README.md
 ```
 
+Everything — tool calling, memory, budget reasoning, UI — lives in `travel_agent_ui.py` as a single file. I kept it that way for a Streamlit Cloud deployment rather than splitting it into a proper package structure.
 
-💡 The entire agent logic — including tool calling, persistent memory, budget reasoning, and UI — is implemented inside travel_agent_ui.py as a single-file deployment, optimised for Streamlit Cloud.
----
+## Limitations
 
-## 🎯 Skills Demonstrated
+- Single-file architecture — fine for a portfolio deploy, not how I'd structure something meant to grow
+- No hotel pricing yet — itineraries suggest stays but don't pull live hotel rates (flight, train, and weather are live; hotel isn't)
+- Memory is a local JSON file, not a real database — works for a single-user demo, won't hold up with concurrent users
+- No booking integration — this is reference pricing only, by design, but worth being explicit about
+- Budget filtering depends on the LLM reasoning correctly about trade-offs, there's no hard constraint solver behind it — it can still suggest something that's a bit over
 
-This project was built to showcase the following to potential employers:
+## What I'd improve next
 
-- ✅ **LLM Integration** — Working with large language models beyond basic chat
-- ✅ **Tool / Function Calling** — Letting an LLM decide when and how to use external tools
-- ✅ **Agentic AI Patterns** — Multi-step reasoning, planning, and execution
-- ✅ **Persistent Memory** — Stateful AI that remembers across sessions
-- ✅ **API Integration** — Connecting multiple live data sources
-- ✅ **Full-Stack Deployment** — End-to-end deployed app (Streamlit Cloud)
-- ✅ **Budget Optimization Logic** — Domain-specific constraint reasoning
+1. Add live hotel price lookup (currently missing, itinerary suggestions for stays aren't backed by real rates)
+2. Multi-city trip support
+3. Google Maps integration for local attractions
+4. PDF export for the itinerary
+5. Voice input
+6. Actual booking redirect links
 
----
+## Why I built this
 
-## 🔮 Future Roadmap
+I wanted to build something with real tool-calling under a budget constraint, not just an LLM that answers questions — trip planning fit because it naturally needs several live data sources (flights, trains, weather) pulled together and reasoned over against a number the user actually cares about. The part I focused on most was making the budget constraint actually shape the output instead of the agent just listing options and leaving the filtering to the user.
 
-- [ ] Add hotel price lookup tool
-- [ ] Support multi-city trip planning
-- [ ] Add Google Maps integration for local attractions
-- [ ] Export itinerary as PDF
-- [ ] Add voice input support
-- [ ] Integrate actual booking redirect links (affiliate)
+## About
 
----
+Shakshi Soni.
 
-## 🙋‍♂️ About the Developer
-
-Built with ❤️ by **[SHAKSHI SONI]**
-
-I'm a developer passionate about building practical AI applications that solve real-world problems. This project explores agentic AI design — where an LLM doesn't just chat, but *acts*, by calling tools, remembering context, and making decisions autonomously.
----
-
-📫 **Connect with me:**
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-0A66C2?style=flat&logo=linkedin)](https://www.linkedin.com/in/shakshi-soni-961048411/)
-
-
-<div align="center">
-
-**⭐ If you found this project interesting, please give it a star! It helps a lot.**
-
-*This project is for educational and portfolio purposes. No actual tickets are booked.*
-
-</div>
